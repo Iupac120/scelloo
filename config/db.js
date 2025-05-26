@@ -6,7 +6,8 @@ const config = {
     db_password:process.env.DB_PASSWORD,
     db_dialect:process.env.DB_DIALECT || "postgres",
     db_host:process.env.DB_HOST || "localhost",
-    db_port:parseInt(process.env.DB_PORT) || 54321
+    db_port:parseInt(process.env.DB_PORT) || 54321,
+    db_use_ssl: process.env.DB_USE_SSL === 'true'
 }
 
 //create new sequelize instance
@@ -16,7 +17,7 @@ const sequelize = new Sequelize(
     config.db_password,
     {
         host:config.db_host,
-        dialect:config.db_host,
+        dialect:config.db_dialect,
         port:config.db_port,
         logging:false,
         dialectOptions:config.db_use_ssl

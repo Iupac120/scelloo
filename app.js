@@ -5,16 +5,33 @@ const morgan = require("morgan")
 const port = process.env.PORT || 5000
 const cors = require("cors")
 
-app.use(cors)
-app.use(morgan("tiny"))
-require("./models")
-
-const start = async () =>{
-    try {
-        app.listen(port,()=>{
-            console.log(`server is listening to port ${port}`)
-        })
-    } catch (error) {
-        console.error("Starting server error", error.msg)
-    }
+const whiteList = [process.env.CLIENT_URL,"localhost"]
+const corsOptions = {
+    origin:function(origin,cb){
+        if(whiteList.indexOf(origin) !== -1 || !origin){
+            cb(null,true)
+        }else{
+            new Error("Not allowed by CORS")
+        }
+    },
+    methods:"HEAD,GET,PUT,PATCH,DELETE,POST",
+    Credentials:true,
+    allowHeaders:"Content-Type, Authorization"
 }
+//middlewares
+app.use(cors(corsOptions))
+app.use(morgan("tiny"))
+//require("./models")
+
+const authRoutes = require('./routes/userRoute')
+const taskRoutes = require('./routes/taskRoute')
+const errorHandler = require('./middlewares/errorMiddleware')
+
+app.use(express.json())
+app.use('/api/v1/auth', authRoutes)
+app.use('/api/v1', taskRoutes)
+
+// Error Handler
+app.use(errorHandler)
+
+module.exports = app

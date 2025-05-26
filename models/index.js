@@ -5,6 +5,10 @@ const sequelize = require("../config/db")
 const User = require("./userModel")(sequelize,DataTypes)
 const Task = require("./taskModel")(sequelize,DataTypes)
 
+//association
+User.hasMany(Task, { foreignKey: 'userId', onDelete: 'CASCADE' })
+Task.belongsTo(User, { foreignKey: 'userId' })
+
 const db = {
     sequelize,
     User,
