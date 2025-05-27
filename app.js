@@ -4,6 +4,8 @@ const app = express()
 const morgan = require("morgan")
 const { swaggerUi, swaggerSpec } = require('./swagger')
 const cors = require("cors")
+const cron = require("node-cron")
+const axios = require("axios")
 
 const whiteList = [process.env.CLIENT_URL,"localhost"]
 const corsOptions = {
