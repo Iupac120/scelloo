@@ -1,93 +1,95 @@
-
 const { Task } = require('../models');
 
-exports.getAllTasks = async (req, res, next) => {
+exports.getAllTasks = async (req, res) => {
   try {
-    const { page = 1, limit = 10, status } = req.query
+    const page = parseInt(req.query.page) || 1
+    const limit = parseInt(req.query.limit) || 10
+    const status = req.query.status
     const offset = (page - 1) * limit
     const where = { userId: req.user.id }
     if (status) where.status = status
-    const tasks = await Task.findAll({
+    const { rows: tasks, count: total } = await Task.findAndCountAll({
       where,
-      limit: parseInt(limit),
-      offset: parseInt(offset),
-      order: [['createdAt', 'DESC']]
-    });
-    res.status(200).json({
+      limit,
+      offset,
+      order: [['createdAt', 'DESC']],
+    })
+    return res.status(200).json({
       status: 'success',
+      page,
+      totalPages: Math.ceil(total / limit),
       results: tasks.length,
-      data: {
-        tasks
-      }
-    });
+      data: { tasks }
+    })
   } catch (err) {
-    next(err)
+    console.error('Fetch tasks error:', err);
+    return res.status(500).json({ message: 'Failed to retrieve tasks' });
   }
 }
 
-exports.createTask = async (req, res, next) => {
+exports.createTask = async (req, res) => {
   try {
     const { title, description, status } = req.body
+    if (!title || !description) {
+      return res.status(400).json({ message: 'Title and description are required' })
+    }
     const task = await Task.create({
       title,
       description,
       status: status || 'pending',
       userId: req.user.id
     })
-    res.status(201).json({
+    return res.status(201).json({
       status: 'success',
-      msg:"task created",
-      data: {
-        task
-      }
+      message: 'Task created',
+      data: { task }
     })
   } catch (err) {
-    next(err);
+    console.error('Create task error:', err);
+    return res.status(500).json({ message: 'Failed to create task' });
   }
-};
+}
 
-exports.updateTask = async (req, res, next) => {
+exports.updateTask = async (req, res) => {
   try {
-    const { id } = req.params
-    const { title, description, status, timeSpent } = req.body
-    
+    const { id } = req.params;
+    const { title, description, status, timeSpent } = req.body;
     const task = await Task.findOne({ where: { id, userId: req.user.id } })
-    
     if (!task) {
-      return next(new Error('No task found with that ID'))
+      return res.status(404).json({ message: 'No task found with that ID' })
     }
-    const updatedTask = await task.update({
-      title: title || task.title,
-      description: description || task.description,
-      status: status || task.status,
-      timeSpent: timeSpent || task.timeSpent
+    await task.update({
+      title: title ?? task.title,
+      description: description ?? task.description,
+      status: status ?? task.status,
+      timeSpent: timeSpent ?? task.timeSpent
     })
-    res.status(200).json({
+    return res.status(200).json({
       status: 'success',
-      msg:"Task updated",
-      data: {
-        task: updatedTask
-      }
-    });
+      message: 'Task updated',
+      data: { task }
+    })
   } catch (err) {
-    next(err)
+    console.error('Update task error:', err)
+    return res.status(500).json({ message: 'Failed to update task' })
   }
-};
+}
 
-exports.deleteTask = async (req, res, next) => {
+exports.deleteTask = async (req, res) => {
   try {
-    const { id } = req.params
-    const task = await Task.findOne({ where: { id, userId: req.user.id } })
+    const { id } = req.params;
+    const task = await Task.findOne({ where: { id, userId: req.user.id } });
     if (!task) {
-      return next(new Error('No task found with that ID'))
+      return res.status(404).json({ message: 'No task found with that ID' });
     }
-    await task.destroy()
-    res.status(204).json({
+    await task.destroy();
+    return res.status(204).json({
       status: 'success',
-      msg:"Task deleted",
+      message: 'Task deleted',
       data: null
     })
   } catch (err) {
-    next(err);
+    console.error('Delete task error:', err);
+    return res.status(500).json({ message: 'Failed to delete task' });
   }
 }

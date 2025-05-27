@@ -2,7 +2,7 @@ require("dotenv").config()
 const express = require("express")
 const app = express()
 const morgan = require("morgan")
-const port = process.env.PORT || 5000
+const { swaggerUi, swaggerSpec } = require('./swagger')
 const cors = require("cors")
 
 const whiteList = [process.env.CLIENT_URL,"localhost"]
@@ -30,6 +30,9 @@ const errorHandler = require('./middlewares/errorMiddleware')
 app.use(express.json())
 app.use('/api/v1/auth', authRoutes)
 app.use('/api/v1', taskRoutes)
+
+//SWAGGER
+app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec))
 
 // Error Handler
 app.use(errorHandler)

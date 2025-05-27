@@ -1,16 +1,23 @@
 
 const jwt = require('jsonwebtoken');
-const { User } = require('../models')
-const jwtConfig = require('../config/jwt')
+const { User } = require('../models');
+const jwtConfig = require('../config/jwt');
 
-exports.register = async (req, res, next) => {
+exports.register = async (req, res) => {
   try {
-    const { username, email, password } = req.body;
-    const user = await User.create({ username, email, password });
-    const token = jwt.sign({ id: user.id }, jwtConfig.secret, { 
-      expiresIn: jwtConfig.expiresIn 
+    const { username, email, password } = req.body
+    if (!username || !email || !password) {
+      return res.status(400).json({ message: 'Input field is missing' })
+    }
+    const exists = await User.findOne({ where: { email } })
+    if (exists) {
+      return res.status(400).json({ message: 'Email already registered' })
+    }
+    const user = await User.create({ username, email, password })
+    const token = jwt.sign({ id: user.id }, jwtConfig.secret, {
+      expiresIn: jwtConfig.expiresIn,
     })
-    res.status(201).json({
+    return res.status(201).json({
       status: 'success',
       token,
       data: {
@@ -18,30 +25,30 @@ exports.register = async (req, res, next) => {
           id: user.id,
           username: user.username,
           email: user.email,
-          role: user.role
-        }
-      }
-    });
+          role: user.role,
+        },
+      },
+    })
   } catch (err) {
-    next(err);
+    console.error('Register error:', err);
+    return res.status(500).json({ message: 'Internal server error' });
   }
 }
 
-exports.login = async (req, res, next) => {
+exports.login = async (req, res) => {
   try {
-    const { email, password } = req.body
+    const { email, password } = req.body;
     if (!email || !password) {
-      return next(new Error('Please provide email and password'));
+      return res.status(400).json({ message: 'Please provide email and password' })
     }
     const user = await User.findOne({ where: { email } })
     if (!user || !(await user.comparePassword(password))) {
-      return next(new Error('Incorrect email or password'))
+      return res.status(401).json({ message: 'Incorrect email or password' })
     }
-    const token = jwt.sign({ id: user.id }, jwtConfig.secret, { 
-      expiresIn: jwtConfig.expiresIn 
+    const token = jwt.sign({ id: user.id }, jwtConfig.secret, {
+      expiresIn: jwtConfig.expiresIn,
     })
-    
-    res.status(200).json({
+    return res.status(200).json({
       status: 'success',
       token,
       data: {
@@ -49,11 +56,12 @@ exports.login = async (req, res, next) => {
           id: user.id,
           username: user.username,
           email: user.email,
-          role: user.role
-        }
-      }
-    });
+          role: user.role,
+        },
+      },
+    })
   } catch (err) {
-    next(err)
+    console.error('Login error:', err);
+    return res.status(500).json({ message: 'Internal server error' });
   }
 }
