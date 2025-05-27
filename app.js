@@ -34,6 +34,15 @@ app.use('/api/v1', taskRoutes)
 //SWAGGER
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec))
 
+//schedule runtime
+cron.schedule('*/30 * * * *', async ()=> {
+  try {
+    const response = await axios.get(process.env.CLIENT_URL)
+    console.log("update successful", response.status)
+  } catch (error) {
+    console.error("failed to update tasks", error.message)
+  }
+})
 // Error Handler
 app.use(errorHandler)
 
