@@ -38,7 +38,7 @@ const initializeDatabase = async ()=>{
         await sequelize.authenticate()
         console.log("Connection to database successful")
 
-        await sequelize.sync({alter:true})
+        await sequelize.sync()
         console.log("Database syn successfully")
     } catch (error) {
         console.error("Datase initialization failed to connect pg", error)

@@ -3,7 +3,7 @@ const bcrypt = require('bcryptjs')
 
 module.exports = (sequelize) => {
   const User = sequelize.define('User', {
-    id: {
+    userId: {
       type: DataTypes.INTEGER,
       primaryKey: true,
       autoIncrement: true
@@ -27,6 +27,7 @@ module.exports = (sequelize) => {
     },
     role: {
       type: DataTypes.ENUM('user', 'admin'),
+      allowNull: false,
       defaultValue: 'user'
     }
   }, {

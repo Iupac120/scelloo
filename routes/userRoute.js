@@ -25,7 +25,7 @@ const { registerSchema, loginSchema } = require('../utils/authValidator');
  *           schema:
  *             $ref: '#/components/schemas/Register'
  *           example:
- *             name: "John Doe"
+ *             username: "John Doe"
  *             email: "john@example.com"
  *             password: "StrongPass123"
  *     responses:
@@ -92,6 +92,7 @@ const { registerSchema, loginSchema } = require('../utils/authValidator');
  *           format: password
  *           example: "SecurePass456"
  */
+
 
 
 router.post('/register', validate(registerSchema), register);
