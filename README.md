@@ -44,20 +44,20 @@ Database synced successfully
 Server running on port 3000
 
 ## Base URL
-http://localhost:3000/api
+http://localhost:3000/api/v1
 
 ## API Documentation Base URL
 http://localhost:3000/api-docs
 
 ## API Endpoints
-POST /api/v1/auth/register
-POST /api/v1/auth/login
-GET /api/v1/tasks
-POST /api/v1/tasks
-PUT /api/v1/tasks/{id}
-DELETE /api/v1/tasks/{id}
-GET /api/v1/report-time
-GET /api/v1/report
+POST /auth/register
+POST /auth/login
+GET /tasks
+POST /tasks
+PUT /tasks/{id}
+DELETE /tasks/{id}
+GET /report-time
+GET /report
 
 ## Contact 
 oforokpara@gmail.com
