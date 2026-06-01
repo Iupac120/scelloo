@@ -234,8 +234,8 @@ router.use(authMiddleware.protect)
 
 router.post('/tasks', restrictTo('admin', 'user'), validate(taskSchema), createTask)
 router.get('/tasks', restrictTo('admin', 'user'), getAllTasks)
-router.get('/report-time', restrictTo('user', 'admin'), getTimeReport)
-router.get('/report', restrictTo('user', 'admin'), getCompletionReport)
+//router.get('/report-time', restrictTo('user', 'admin'), getTimeReport)
+//router.get('/report', restrictTo('user', 'admin'), getCompletionReport)
 router.put('/tasks/:id', restrictTo('admin', 'user'), validate(taskSchema), updateTask)
 
 // Admin only route

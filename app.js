@@ -27,11 +27,13 @@ app.use(morgan("tiny"))
 
 const authRoutes = require('./routes/userRoute')
 const taskRoutes = require('./routes/taskRoute')
+const reportRoutes = require("./routes/reportRoute")
 const errorHandler = require('./middlewares/errorMiddleware')
 
 app.use(express.json())
 app.use('/api/v1/auth', authRoutes)
 app.use('/api/v1', taskRoutes)
+app.use('/api/v1',reportRoutes)
 
 //SWAGGER
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec))
